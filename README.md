@@ -1,228 +1,95 @@
-# 🏋️‍♂️ Fitness Booking API
+# 🏋️‍♀️ Fitness Studio Booking API
 
-A simple **fitness studio booking system** built with **FastAPI**.  
-This project was built as part of a Python Developer Assignment to demonstrate skills in backend development, API design, validation, and testing.
-
----
-
-## ✨ Features
-- **View available fitness classes** (`GET /classes`) with timezone support
-- **Book a spot in a class** (`POST /book`)
-- **View bookings** (`GET /bookings`)
-- **Filter bookings by client email** (`GET /bookings?email=...`)
-- Automatic **slot management** (reduces available slots when booked)
-- Clean, modular code (separate `main.py`, `models.py`, `database.py`)
-- **Pydantic validation** including email format check
-- Interactive API documentation with **Swagger UI** (`/docs`) and **ReDoc** (`/redoc`)
-- Basic **unit tests** with pytest
+A lightweight FastAPI REST service for managing fitness studio operations — enabling users to browse classes, reserve slots, and track their bookings.
 
 ---
 
-## 🛠️ Tech Stack
-- **FastAPI** – API framework  
-- **Pydantic** – Data validation  
-- **JSON files** – Lightweight persistence (no DB setup needed)  
-- **Python 3.11+**  
-- **Pytest** – Unit testing framework  
+## 🚀 Setup Instructions
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/fitness_booking_api.git
+   cd fitness_booking_api
+    ```
+2. Create and activate a virtual environment
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate   # Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the server
+
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+👉 API will be available at:
+
+* Homepage: [http://localhost:8000/](http://localhost:8000/)
+* Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+* ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
 
-## 🚀 Getting Started
+## 📚 API Endpoints
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/<your-username>/fitness-booking-api.git
-cd fitness-booking-api
-````
-
-### 2. Create virtual environment
-
-```bash
-python -m venv venv
-# On Linux/Mac
-source venv/bin/activate
-# On Windows
-venv\Scripts\activate
-```
-
-### 3. Install dependencies
+### 🔹 1. API Status
 
 ```bash
-pip install -r requirements.txt
+curl http://localhost:8000/
 ```
 
-### 4. Run the server
+### 🔹 2. Get Classes
 
 ```bash
-uvicorn main:app --reload
+curl http://localhost:8000/classes
+curl "http://localhost:8000/classes?tz=utc"
 ```
 
-### 5. Open in browser
+### 🔹 3. Get All Bookings
 
-* Swagger docs → [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* ReDoc → [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
-
----
-
-## 📦 Sample Seed Data
-
-### `data/classes.json`
-
-```json
-[
-  {
-    "name": "Yoga",
-    "datetime": "2025-08-28T07:00:00+05:30",
-    "instructor": "Priya Sharma",
-    "available_slots": 10
-  },
-  {
-    "name": "Zumba",
-    "datetime": "2025-08-28T18:00:00+05:30",
-    "instructor": "Rahul Verma",
-    "available_slots": 15
-  },
-  {
-    "name": "HIIT",
-    "datetime": "2025-08-29T06:30:00+05:30",
-    "instructor": "Neha Singh",
-    "available_slots": 12
-  }
-]
+```bash
+curl http://localhost:8000/bookings
 ```
 
-### `data/bookings.json`
+### 🔹 4. Get Bookings by Email
 
-```json
-[]
+```bash
+curl "http://localhost:8000/bookings?email=test@example.com"
+```
+
+### 🔹 5. Create a Booking
+
+```bash
+curl -X POST http://localhost:8000/book \
+  -H "Content-Type: application/json" \
+  -d '{"class_name":"Yoga","client_name":"John","client_email":"john@example.com"}'
 ```
 
 ---
 
-## 📌 API Endpoints
+## 🧪 Testing
 
-### 1. Root
-
-**GET /**
-Returns HTML instructions and links to `/docs` and `/redoc`.
-
----
-
-### 2. Classes
-
-**GET /classes?tz=Asia/Kolkata**
-
-* Returns a list of available classes in the requested timezone.
-* Query parameter `tz` is optional, with dropdown options:
-
-  * `Asia/Kolkata`
-  * `UTC`
-  * `America/New_York`
-  * `Europe/London`
-
-✅ Example Response:
-
-```json
-[
-  {
-    "name": "Yoga",
-    "datetime": "2025-08-28T01:30:00+00:00",
-    "instructor": "Priya Sharma",
-    "available_slots": 10
-  }
-]
-```
-
----
-
-### 3. Bookings
-
-**GET /bookings**
-Returns all bookings.
-
-**GET /bookings?email=[user@example.com](mailto:user@example.com)**
-Filters bookings by email.
-
-✅ Example Response:
-
-```json
-[
-  {
-    "booking_id": 1,
-    "class_name": "Yoga",
-    "client_name": "Alice",
-    "client_email": "alice@example.com"
-  }
-]
-```
-
----
-
-### 4. Book a Class
-
-**POST /book**
-Request body:
-
-```json
-{
-  "class_name": "Yoga",
-  "client_name": "Alice",
-  "client_email": "alice@example.com"
-}
-```
-
-✅ Example Response:
-
-```json
-{
-  "booking_id": 1,
-  "class_name": "Yoga",
-  "client_name": "Alice",
-  "client_email": "alice@example.com"
-}
-```
-
-Handles errors:
-
-* ❌ `404` if class not found
-* ❌ `400` if no slots available
-* ❌ `422` if email format is invalid
-
----
-
-## 🧪 Running Tests
-
-Tests are written with **pytest**.
-
-Run:
+Run the test suite:
 
 ```bash
 pytest -v
 ```
 
-### Included Tests
-
-* ✅ `/` root loads successfully
-* ✅ `/classes` returns list of dictionaries with correct keys
-* ✅ `/book` creates a booking successfully
-* ✅ `/bookings?email=...` returns correct booking
-
 ---
 
-## 🎯 Future Improvements
+## 🔮 Future Enhancements
 
-* Replace JSON storage with SQLite or PostgreSQL
-* Add authentication for clients
-* Class scheduling with recurrence
-* Admin dashboard for managing instructors and slots
-
----
-
-## 📄 License
-
-MIT License – free to use and modify.
-
-```
+* [ ] User authentication
+* [ ] Payments & email notifications
+* [ ] Instructor & class management
 
 ## Author 👤
 
